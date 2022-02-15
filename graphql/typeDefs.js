@@ -5,6 +5,7 @@ module.exports = gql`
     username: String!
     email: String
     createdAt: String!
+    password: String!
   }
   type Room {
     uuid: String!
@@ -24,5 +25,15 @@ module.exports = gql`
   }
   type Query {
     getUsers: [User]!
+    getRooms: [Room]!
+    getEvents: [Event]!
+  }
+  type Mutation {
+    register(
+      username: String!
+      email: String!
+      password: String!
+      confirmPassword: String!
+    ): User!
   }
 `
