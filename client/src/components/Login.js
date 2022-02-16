@@ -22,9 +22,9 @@ export default function Login(props) {
   const [errors, setErrors] = useState({})
   let navigate = useNavigate()
   const [loginUser, { loading }] = useLazyQuery(LOGIN_USER, {
-    onError: (err) => setErrors(err.graphQLErrors[0].extensions.errors),
+    onError: (error) => setErrors(error && error.graphQLErrors[0] ? error.graphQLErrors[0].extensions.errors : {}),
     onCompleted(data) {
-      localStorage.setItem('token', data ? data.login.token : null)
+      localStorage.setItem('token', data.login.token)
       navigate('/')
     },
   })
