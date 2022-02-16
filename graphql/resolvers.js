@@ -74,7 +74,7 @@ module.exports = {
   
           if (!correctPassword) {
             errors.password = 'password is incorrect'
-            throw new AuthenticationError('password is incorrect', { errors })
+            throw new UserInputError('password is incorrect', { errors })
           }
   
           const token = jwt.sign({ username }, JWT_SECRET, {
@@ -129,12 +129,12 @@ module.exports = {
 
       } catch (err) {
         console.log(err)
-        const field = err.parent.constraint.split('_')[1]
         if (err.name === 'SequelizeUniqueConstraintError') {
+            const field = err.parent.constraint.split('_')[1]
             errors[field] = `${field} is already taken`
         } else if (err.name === 'SequelizeValidationError') {
             err.errors.forEach((e) => (errors[e.path] = e.message))
-          }
+        }
         throw new UserInputError('Bad input', { errors })
       }
     },
