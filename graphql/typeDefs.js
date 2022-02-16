@@ -2,18 +2,19 @@ const { gql } = require('apollo-server-express')
 
 module.exports = gql`
   type User {
+    id: ID!
     username: String!
     email: String
     createdAt: String!
     token: String
   }
   type Room {
-    uuid: String!
+    id: ID!
     name: String!
     availability: Boolean!
   }
   type Event {
-    uuid: String!
+    id: ID!
     title: String!
     description: String!
     date: String!
@@ -36,5 +37,20 @@ module.exports = gql`
       password: String!
       confirmPassword: String!
     ): User!
+    createEvent(
+      title: String!
+      description: String!
+      date: String!
+      begin_hour: String!
+      end_hour: String!
+    ): Event!
+    updateEvent(
+      id: ID!
+      title: String!
+      description: String!
+      date: String!
+      begin_hour: String!
+      end_hour: String!
+      ): [Event]!
   }
 `
