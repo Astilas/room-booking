@@ -1,13 +1,20 @@
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
-const { sequelize } = require('./models')
+const { sequelize } = require('./models');
+const cors = require('cors');
 
 const resolvers = require('./graphql/resolvers')
 const typeDefs = require('./graphql/typeDefs')
 
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true,
+  };
+
 const server = new ApolloServer({
     typeDefs,
     resolvers,
+    cors: cors(corsOptions),
     context: (ctx) => ctx
   })
 
