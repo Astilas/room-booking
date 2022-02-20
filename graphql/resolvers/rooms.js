@@ -5,7 +5,7 @@ module.exports = {
     Query: {
         getRooms: async (_, __, { user }) => {
             try {
-                if (!user) throw new AuthenticationError('Unauthenticated');
+                // if (!user) throw new AuthenticationError('Unauthenticated');
 
                 const rooms = await Room.findAll({
                     where: { availability: true }
