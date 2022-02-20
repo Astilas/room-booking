@@ -20,39 +20,42 @@ module.exports = {
             throw err;
         }
       },
+  },
+
+  Mutation: {
     login: async (_, args) => {
         const { username, password } = args
         let errors = {}
-  
+    
         try {
           if (username.trim() === '')
             errors.username = 'username must not be empty'
           if (password === '') errors.password = 'password must not be empty'
-  
+    
           if (Object.keys(errors).length > 0) {
             throw new UserInputError('bad input', { errors })
           }
-  
+    
           const user = await User.findOne({
             where: { username },
           })
-  
+    
           if (!user) {
             errors.username = 'user not found'
             throw new UserInputError('user not found', { errors })
           }
-  
+    
           const correctPassword = await bcrypt.compare(password, user.password)
-  
+    
           if (!correctPassword) {
             errors.password = 'password is incorrect'
             throw new UserInputError('password is incorrect', { errors })
           }
-  
-          const token = jwt.sign({ username }, JWT_SECRET, {
+          const { id, email } = user;
+          const token = jwt.sign({ id, email, username }, JWT_SECRET, {
             expiresIn: 60 * 60,
           })
-  
+    
           return {
             ...user.toJSON(),
             createdAt: user.createdAt.toISOString(),
@@ -62,9 +65,7 @@ module.exports = {
           console.log(err)
           throw err
         }
-      },
-  },
-  Mutation: {
+    },
     register: async (_, args) => {
       let { username, email, password, confirmPassword } = args
       let errors = {}
