@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { gql, useMutation } from '@apollo/client';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import SelectRoom from './SelectRoom';
 
 const UPDATE_EVENT = gql`
   mutation updateEvent(
@@ -55,6 +56,10 @@ export default function UpdateEvent() {
     update: (_, __) => navigate('/'),
     onError: (error) => setErrors(error && error.graphQLErrors[0] ? error.graphQLErrors[0].extensions.errors : {}),
   });
+
+  const handleRoomChange = (roomId) => {
+    setVariables({ ...variables, room_id: roomId })  
+  };
 
   const submitEventForm = (e) => {
     e.preventDefault();
@@ -142,21 +147,7 @@ export default function UpdateEvent() {
                         />
                     </Form.Group>
                     <Form.Group>
-                        <Form.Label className={errors.room_id && 'text-danger'}>
-                            {errors.room_id ?? 'Which room ?'}
-                        </Form.Label>
-                        <Form.Control
-                            as="select"
-                            value={variables.room_id}
-                            className={errors.room_id && 'is-invalid'}
-                            onChange={(e) =>
-                                setVariables({ ...variables, room_id: e.target.value })
-                            }
-                            required
-                        >
-                                    <option value="">Choose...</option>
-                                    <option value="1">Party</option>
-                                </Form.Control>
+                        <SelectRoom errors={errors} handleRoomChange={handleRoomChange} />
                     </Form.Group>
                     <div className="center mt-3">
                         <Button variant="success" type="submit" disabled={loading}>
