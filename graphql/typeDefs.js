@@ -28,9 +28,9 @@ module.exports = gql`
     getUsers: [User]!
     getRooms: [Room]!
     getEvents: [Event]!
-    login(username: String!, password: String!): User!
   }
   type Mutation {
+    login(username: String!, password: String!): User!
     register(
       username: String!
       email: String!
@@ -43,6 +43,7 @@ module.exports = gql`
       date: String!
       begin_hour: String!
       end_hour: String!
+      room_id: ID!
     ): Event!
     updateEvent(
       id: ID!
@@ -51,6 +52,7 @@ module.exports = gql`
       date: String!
       begin_hour: String!
       end_hour: String!
+      room_id: ID!
       ): [Event]!
   }
 `

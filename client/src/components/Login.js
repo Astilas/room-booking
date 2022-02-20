@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
-import { Row, Col, Form, Button } from 'react-bootstrap'
-import { gql, useLazyQuery } from '@apollo/client'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useState } from 'react';
+import { Row, Col, Form, Button } from 'react-bootstrap';
+import { gql, useMutation } from '@apollo/client';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuthDispatch } from '../context/auth';
 
 const LOGIN_USER = gql`
-  query login($username: String!, $password: String!) {
+  mutation login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
+      id
       username
       email
       createdAt
@@ -14,17 +16,20 @@ const LOGIN_USER = gql`
   }
 `
 
-export default function Login(props) {
+export default function Login() {
   const [variables, setVariables] = useState({
     username: '',
     password: '',
   })
-  const [errors, setErrors] = useState({})
-  let navigate = useNavigate()
-  const [loginUser, { loading }] = useLazyQuery(LOGIN_USER, {
+  const [errors, setErrors] = useState({});
+
+  const dispatch = useAuthDispatch()
+  let navigate = useNavigate();
+
+  const [loginUser, { loading }] = useMutation(LOGIN_USER, {
     onError: (error) => setErrors(error && error.graphQLErrors[0] ? error.graphQLErrors[0].extensions.errors : {}),
     onCompleted(data) {
-      localStorage.setItem('token', data.login.token)
+      dispatch({ type: 'LOGIN', payload: data.login })
       navigate('/')
     },
   })
