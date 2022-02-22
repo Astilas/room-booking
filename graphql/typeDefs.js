@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express')
+const { gql } = require('apollo-server-express');
 
 module.exports = gql`
   type User {
@@ -28,6 +28,7 @@ module.exports = gql`
     getUsers: [User]!
     getRooms: [Room]!
     getEvents: [Event]!
+    getEventById(id: ID!): Event!
   }
   type Mutation {
     login(username: String!, password: String!): User!
@@ -54,5 +55,15 @@ module.exports = gql`
       end_hour: String!
       room_id: ID!
       ): [Event]!
+    deleteEvent(id: ID!): Boolean
+  }
+  type Subscription {
+    newEvent: Event!
+    removeEvent: EventSubscription!
+    changeAvailabilityRoom: Room!
+  }
+  type EventSubscription {
+      mutation: String!
+      event: Event!
   }
 `
