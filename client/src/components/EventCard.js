@@ -1,8 +1,34 @@
-import React from 'react';
-import { Row, Container } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Row, Container, Button } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
+import { gql, useMutation } from '@apollo/client';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+
+import { toast } from 'react-toastify';
+const notify = () => toast('Your event has been removed');
 
 export default function EventCard(props) {
+
+  const notify = () => toast('Your event has been removed');
+  const DELETE_EVENT = gql`
+    mutation deleteEvent ($id: ID!){
+      deleteEvent (id: $id)
+    }
+  `
+
+  // const { id } = useParams(); // Unpacking and retrieve id
+
+  const [ errors, setErrors ] = useState({})
+  let navigate = useNavigate();
+  const [deleteEvent, { loading }] = useMutation(DELETE_EVENT, {
+    onCompleted: (_, __) => navigate('/'),
+    onError: (error) => setErrors(error && error.graphQLErrors[0] ? error.graphQLErrors[0].extensions.errors : {}),
+  });
+
+  const handleDelete = () => {
+    deleteEvent({ variables: { id: props.id } } )
+  };
+
     return (
         <Row className="div-event">
           <Card bg="info" text="white" style={{ width: '30rem', height:'30rem' }}>
@@ -22,6 +48,16 @@ export default function EventCard(props) {
               </Card.Text>
             </Card.Body>
             <Card.Footer>
+              <Button onClick={() =>
+                  navigate(`/update-event/${props.id}`)}>
+                  Check event
+              </Button>
+              <Button
+                className="icon-size"
+                onClick={handleDelete}
+              >
+                Delete event
+              </Button>
             </Card.Footer>
           </Card>
         </Row>
