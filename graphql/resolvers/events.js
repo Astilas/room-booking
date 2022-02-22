@@ -1,5 +1,8 @@
 const { UserInputError, AuthenticationError } = require('apollo-server-express');
-const { Event } = require('../../models')
+const { withFilter } = require('graphql-subscriptions');
+const { Event } = require('../../models');
+
+const { PubSub } = require('graphql-subscriptions');
 
 module.exports = {
     Query: {
@@ -15,15 +18,27 @@ module.exports = {
                 throw err;
             }
         },
+        getEventById: async (_, args, { user }) => {
+          const { id } = args;
+          try {
+              // if (!user) throw new AuthenticationError('Unauthenticated');
+
+              const event = await Event.findOne({ where: { id: id } });
+  
+              return event;
+          } catch (err) {
+              console.log(err);
+              throw err;
+          }
+        },
     },
     Mutation: {
-        createEvent: async (_, args, { user }) => {
-          let { title, description, date, begin_hour, end_hour, room_id } = args
-          let errors = {}
-    
+        createEvent: async (_, args, { user, pubsub }) => {
+          let { title, description, date, begin_hour, end_hour, room_id } = args;
+          let errors = {};
+
           try {
-            console.log(user);
-            // if (!user) throw new AuthenticationError('Unauthenticated');
+            if (!user) throw new AuthenticationError('Unauthenticated');
 
             // Validate input data
             if (title.trim() === '') errors.title = 'title must not be empty'
@@ -54,8 +69,11 @@ module.exports = {
               user_id: 1,
             })
     
+            // Publish event
+            pubsub.publish('NEW_EVENT', { newEvent: event });
+
             // Return event
-            return event
+            return event;
     
           } catch (err) {
             console.log(err)
@@ -67,11 +85,11 @@ module.exports = {
           }
         },
         updateEvent: async (_, args, { user }) => {
-            let { id, title, description, date, begin_hour, end_hour, room_id } = args
-            let errors = {}
+            let { id, title, description, date, begin_hour, end_hour, room_id } = args;
+            let errors = {};
       
             try {
-              // if (!user) throw new AuthenticationError('Unauthenticated');
+              if (!user) throw new AuthenticationError('Unauthenticated');
 
               // Validate input data
               if (title.trim() === '') errors.email = 'title must not be empty'
@@ -91,7 +109,7 @@ module.exports = {
                 throw errors;
               }
               
-              const event = await Event.findAll( { where: { id: id }});
+              const event = await Event.findOne( { where: { id: id }});
 
               if (!event) throw new UserInputError(`Couldn’t find event with id ${id}`);
 
@@ -108,7 +126,33 @@ module.exports = {
               }, { where :{ id: id} })
       
               // Return event
-              return event
+              return event;
+      
+            } catch (err) {
+              console.log(err)
+              // if (err.name === 'SequelizeValidationError') {
+              //     err.errors.forEach((e) => (errors[e.path] = e.message))
+              // }
+            //   throw new UserInputError('Bad input', { errors })
+              throw err;
+            }
+          },
+          deleteEvent: async (_, args, { user, pubsub }) => {
+            const { id } = args;
+      
+            try {
+              if (!user) throw new AuthenticationError('Unauthenticated');
+
+              const event = await Event.findOne( { where: { id: id }});
+              // Delete event ==> BOOL
+              const eventRemoved = await Event.destroy({ where: { id: id }});
+
+              pubsub.publish('REMOVE_EVENT', { removeEvent: {
+                mutation: "Deleted",
+                event: event
+              } });
+
+              return eventRemoved;
       
             } catch (err) {
               console.log(err)
@@ -120,4 +164,20 @@ module.exports = {
             }
           },
     },
+    Subscription: {
+      newEvent: {
+        subscribe:
+        (_, __, { pubsub, user }) => {
+          return pubsub.asyncIterator(['NEW_EVENT'])
+        },
+        
+      },
+      removeEvent: {
+        subscribe: 
+         (_, __, { pubsub, user }) => {
+            if (!user) throw new AuthenticationError('Unauthenticated')
+            return pubsub.asyncIterator(['REMOVE_EVENT'])
+          }
+    },
+  }
 }

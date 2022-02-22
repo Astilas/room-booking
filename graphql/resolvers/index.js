@@ -19,4 +19,8 @@ module.exports = {
     ...roomResolvers.Mutation,
     ...eventResolvers.Mutation,
   },
+  Subscription: {
+    ...eventResolvers.Subscription,
+    ...roomResolvers.Subscription,
+  }
 }
