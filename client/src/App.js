@@ -16,7 +16,6 @@ import { EventProvider } from './context/events';
 import { RoomProvider } from './context/rooms';
 import ProtectedRoute from './components/ProtectedRoute';
 import GuestRoute from './components/GuestRoute';
-// import Event from './components/Event';
 
 function App(props) {
   return (
@@ -36,9 +35,6 @@ function App(props) {
                   <Route exact path='/' element={<ProtectedRoute/>} >
                     <Route exact path='/update-event/:id' element={<UpdateEvent />} />
                   </Route>
-                  {/* <Route exact path='/' element={<ProtectedRoute/>} >
-                    <Route exact path='/event/:id' element={<Event />} />
-                  </Route> */}
                   <Route exact path='/' element={<GuestRoute/>} >
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />
