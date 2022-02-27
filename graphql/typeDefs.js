@@ -11,13 +11,14 @@ module.exports = gql`
   type Room {
     id: ID!
     name: String!
-    availability: Boolean!
+    availability: [String]!
   }
   type Event {
     id: ID!
     title: String!
     description: String!
     date: String!
+    booking_hour: [String]!
     begin_hour: String!
     end_hour: String!
     createdAt: String!
@@ -42,25 +43,32 @@ module.exports = gql`
       title: String!
       description: String!
       date: String!
+      booking_hour: [String]!
       begin_hour: String!
       end_hour: String!
       room_id: ID!
+      user_id: ID!
     ): Event!
     updateEvent(
       id: ID!
       title: String!
       description: String!
       date: String!
+      booking_hour: [String]!
       begin_hour: String!
       end_hour: String!
       room_id: ID!
       ): [Event]!
+    updateRoom(
+      id: ID!
+      availability: [String]!
+      ): Room!
     deleteEvent(id: ID!): Boolean
   }
   type Subscription {
     newEvent: Event!
     removeEvent: EventSubscription!
-    changeAvailabilityRoom: Room!
+    changeRoomAvailability: Room!
   }
   type EventSubscription {
       mutation: String!
