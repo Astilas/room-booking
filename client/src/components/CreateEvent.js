@@ -1,159 +1,215 @@
 import React, { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
-import { gql, useQuery, useMutation } from '@apollo/client';
-import { Link, useNavigate } from 'react-router-dom';
+import { gql, useMutation } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
 import SelectRoom from './SelectRoom';
-
+import checkTodayDate from '../functions/checkTodayDate';
+import { useAuthState } from '../context/auth';
+import { useRoomState, useRoomDispatch } from '../context/rooms';
 
 const CREATE_EVENT = gql`
   mutation createEvent(
       $title: String!
       $description: String!
       $date: String!
+      $booking_hour: [String]!
       $begin_hour: String!
       $end_hour: String!
       $room_id: ID!
+      $user_id: ID!
     ) {
       createEvent(
         title: $title 
         description: $description 
-        date: $date 
+        date: $date
+        booking_hour: $booking_hour
         begin_hour: $begin_hour
         end_hour: $end_hour
         room_id: $room_id
+        user_id: $user_id
       ) {
         title
         description
         date
+        booking_hour
         begin_hour
         end_hour
         room_id {
+            id
+        }
+        user_id {
             id
         }
       }
     }
 `;
 
-export default function CreateEvent(props) {
+const UPDATE_ROOM = gql`
+  mutation updateRoom(
+      $id: ID!
+      $availability: [String]!
+    ) {
+      updateRoom(
+        id: $id
+        availability: $availability
+      ) {
+        id
+        name
+        availability
+      }
+    }
+`;
 
-  const [variables, setVariables] = useState({
-    title: '',
-    description: '',
-    date: '',
-    begin_hour: '',
-    end_hour: '',
-    room_id: '',
-  })
+export default function CreateEvent({ closeModal }) {
+    const { user } = useAuthState();
+    const { rooms } = useRoomState()
+    const todayDate = checkTodayDate();
 
-  const [ errors, setErrors ] = useState({})
-  let navigate = useNavigate();
+    const [variables, setVariables] = useState({
+        id: '',
+        title: '',
+        description: '',
+        date: '',
+        begin_hour: '',
+        booking_hour: [],
+        end_hour: '',
+        room_id: '',
+        user_id: user.id,
+        availability: [],
+    })
 
-  const [createEvent, { loading }] = useMutation(CREATE_EVENT, {
-    update: (_, __) => navigate('/'),
-    onError: (error) => setErrors(error && error.graphQLErrors[0] ? error.graphQLErrors[0].extensions.errors : {}),
-  });
+    const [roomValues, setRoomValues] = useState({
+        room: {},
+    });
 
-  const handleRoomChange = (roomId) => {
-    setVariables({ ...variables, room_id: roomId })  
-  }
+    const roomDispatch = useRoomDispatch();
+    const [errors, setErrors] = useState({});
+    let navigate = useNavigate();
 
-  const submitEventForm = (e) => {
-    e.preventDefault();
+    const [updateRoom, { loading_rooms }] = useMutation(UPDATE_ROOM, {
+        // onCompleted: (data) =>
+        //     roomDispatch({ type: 'UPDATE_ROOM', payload: data.updateRoom }),
+        // onError: (error) => setErrors(error && error.graphQLErrors[0] ? error.graphQLErrors[0].extensions.errors : {}),
+    });
 
-    createEvent({ variables });
-  }
+    const [createEvent, { loading }] = useMutation(CREATE_EVENT, {
+        // update: (_, __) => navigate('/'),
+        onError: (error) => setErrors(error && error.graphQLErrors[0] ? error.graphQLErrors[0].extensions.errors : {}),
+    });
 
-  return (
-    <Container>
-        <Row className="bg-white py-5 justify-content-center">
-            <Col sm={8} md={6} lg={4}>
-                <h1 className="center">Create an event</h1>
-                <Form onSubmit={submitEventForm}>
-                    <Form.Group>
-                        <Form.Label className={errors.title && 'text-danger'}>
-                            {errors.title ?? 'Title'}
-                        </Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={variables.title}
-                            className={errors.title && 'is-invalid'}
-                            onChange={(e) =>
-                                setVariables({ ...variables, title: e.target.value })
-                            }
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label className={errors.description && 'text-danger'}>
-                            {errors.description ?? 'Description'}
-                        </Form.Label>
-                        <Form.Control
-                            type="text-area"
-                            value={variables.description}
-                            className={errors.description && 'is-invalid'}
-                            onChange={(e) =>
-                                setVariables({ ...variables, description: e.target.value })
-                            }
-                            required
-                        />
-                    </Form.Group>
-                        <Form.Group>
-                            <Form.Label className={errors.date && 'text-danger'}>
-                                {errors.date ?? 'Date'}
-                            </Form.Label>
-                        <Form.Control
-                            type="date"
-                            value={variables.date}
-                            className={errors.date && 'is-invalid'}
-                            onChange={(e) =>
-                                setVariables({ ...variables, date: e.target.value })
-                            }
-                            required
-                        />
-                    </Form.Group>
-                        <Form.Group>
-                            <Form.Label className={errors.begin_hour && 'text-danger'}>
-                            {errors.begin_hour ?? 'Begin hour'}
-                            </Form.Label>
-                            <Form.Control
-                                type="time"
-                                value={variables.begin_hour}
-                                className={errors.begin_hour && 'is-invalid'}
-                                onChange={(e) => 
-                                    setVariables({
-                                        ...variables,
-                                        begin_hour: e.target.value,
-                                    })
-                                }
-                                required
-                            />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label className={errors.end_hour && 'text-danger'}>
-                            {errors.end_hour ?? 'End hour'}
-                        </Form.Label>
-                        <Form.Control
-                            type="time"
-                            value={variables.end_hour}
-                            className={errors.end_hour && 'is-invalid'}
-                            onChange={(e) =>
-                                setVariables({ ...variables, end_hour: e.target.value })
-                            }
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group>
-                        <SelectRoom errors={errors} handleRoomChange={handleRoomChange} />
-                    </Form.Group>
-                    <div className="center mt-3">
-                        <Button variant="success" type="submit" disabled={loading}>
-                            {loading ? 'loading..' : 'Create'}
-                        </Button>{' '}
-                        <Col>Go back <Link to="/">home</Link></Col>
+    const handleAvailabilityChange = (roomId) => {
+        const selectRoomDatas = rooms.find((room) => room.id === roomId);
+
+        setVariables({ ...variables, room_id: roomId, id: roomId })
+        setRoomValues({ ...roomValues, room: selectRoomDatas })
+    }
+
+    const { booking_hour } = variables;
+    const { room } = roomValues;
+    const handleChange = (optionValue) => {
+        //Delete item
+        let difference = booking_hour.filter(x => !optionValue.includes(x));
+
+        const selectHour = optionValue.map((item) => {
+            return item.value;
+        });
+
+        const coupleHour = room.availability;
+
+        const filter_array = coupleHour.filter((item) => {
+            return selectHour.indexOf(item) < 0;
+        });
+
+        setVariables({ ...variables, booking_hour: selectHour, availability: filter_array })
+    }
+
+    const submitEventForm = (e) => {
+        e.preventDefault();
+
+        createEvent({ variables });
+
+        updateRoom({ variables })
+        closeModal();
+    }
+
+    return (
+        <div className="modal">
+            <div className="modal-dialog" role="document">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h5 className="modal-title">Add Event</h5>
+                        <button type="button" className="close" onClick={closeModal}>
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                </Form>
-            </Col>
-        </Row>
-    </Container>         
-)
+                    <div className="modal-body">
+                        <Container>
+                            <Row className="bg-white py-5 justify-content-center">
+
+                                <h1 className="center">Create an event</h1>
+                                <Form onSubmit={submitEventForm}>
+                                    <Form.Group>
+                                        <Form.Label className={errors.title && 'text-danger'}>
+                                            {errors.title ?? 'Title'}
+                                        </Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            value={variables.title}
+                                            className={errors.title && 'is-invalid'}
+                                            onChange={(e) =>
+                                                setVariables({ ...variables, title: e.target.value })
+                                            }
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label className={errors.description && 'text-danger'}>
+                                            {errors.description ?? 'Description'}
+                                        </Form.Label>
+                                        <Form.Control
+                                            type="text-area"
+                                            value={variables.description}
+                                            className={errors.description && 'is-invalid'}
+                                            onChange={(e) =>
+                                                setVariables({ ...variables, description: e.target.value })
+                                            }
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label className={errors.date && 'text-danger'}>
+                                            {errors.date ?? 'Date'}
+                                        </Form.Label>
+                                        <Form.Control
+                                            type="date"
+                                            value={variables.date}
+                                            className={errors.date && 'is-invalid'}
+                                            onChange={(e) =>
+                                                setVariables({ ...variables, date: e.target.value })
+                                            }
+                                            min={todayDate}
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <SelectRoom
+                                            errors={errors}
+                                            handleAvailabilityChange={handleAvailabilityChange}
+                                            handleChange={handleChange}
+                                            room={roomValues.room}
+                                        />
+                                    </Form.Group>
+                                    <div className="center mt-3">
+                                        <Button variant="success" type="submit" disabled={loading}>
+                                            {loading ? 'loading..' : 'Create'}
+                                        </Button>{' '}
+                                    </div>
+                                </Form>
+                            </Row>
+                        </Container>
+                    </div>
+                </div>
+            </div>
+        </div >
+    )
 }
