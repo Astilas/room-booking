@@ -4,12 +4,29 @@ const RoomStateContext = createContext();
 const RoomDispatchContext = createContext();
 
 const roomReducer = (state, action) => {
+  const { room } = action.payload;
   switch (action.type) {
     case 'GET_ROOMS':
         return {
           ...state,
           rooms: action.payload,
         }
+    case 'UPDATE_ROOM':
+      const roomsCopy = [...state.rooms];
+      const id = room.id;
+
+      const selectRoomDatas = roomsCopy.find((room) => room.id === id);
+
+      // Return all rooms without the rooms were the events got deleted
+      const newRooms = roomsCopy.filter((room) => {
+        return room !== selectRoomDatas;
+      });
+
+      // Then add the upadted room (with the new available hour) in rooms state
+      return {
+        ...state,
+        rooms: [...newRooms, room],
+      };
     default:
       throw new Error(`Unknown action type: ${action.type}`);
   }
