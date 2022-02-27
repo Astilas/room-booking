@@ -1,22 +1,34 @@
 import React, { useState } from 'react';
-import { Row, Container, Button } from 'react-bootstrap';
+import { Row, Button } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
 import { gql, useMutation } from '@apollo/client';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-
-import { toast } from 'react-toastify';
-const notify = () => toast('Your event has been removed');
+import {  useNavigate, useParams } from 'react-router-dom';
+import { useRoomState, useRoomDispatch } from '../context/rooms';
+import { useEventState } from '../context/events';
 
 export default function EventCard(props) {
 
-  const notify = () => toast('Your event has been removed');
   const DELETE_EVENT = gql`
     mutation deleteEvent ($id: ID!){
       deleteEvent (id: $id)
     }
   `
 
-  // const { id } = useParams(); // Unpacking and retrieve id
+  const UPDATE_ROOM = gql`
+  mutation updateRoom(
+      $id: ID!
+      $availability: [String]!
+    ) {
+      updateRoom(
+        id: $id
+        availability: $availability
+      ) {
+        id
+        name
+        availability
+      }
+    }
+`;
 
   const [ errors, setErrors ] = useState({})
   let navigate = useNavigate();
@@ -24,9 +36,29 @@ export default function EventCard(props) {
     onCompleted: (_, __) => navigate('/'),
     onError: (error) => setErrors(error && error.graphQLErrors[0] ? error.graphQLErrors[0].extensions.errors : {}),
   });
+  const roomDispatch = useRoomDispatch();
+  const [updateRoom] = useMutation(UPDATE_ROOM, {
+    onCompleted: (data) => 
+        roomDispatch({ type: 'UPDATE_ROOM', payload: data.updateRoom }),
+    // onError: (error) => setErrors(error && error.graphQLErrors[0] ? error.graphQLErrors[0].extensions.errors : {}),
+  });
+  
+  const { events } = useEventState();
+  const { rooms } = useRoomState();
 
   const handleDelete = () => {
+
+    // Find in events the corresponding id 
+    const selectEventDatas = events.find((event) => event.id === props.id)
+
+    const selectRoomDatas = rooms.find((room) => room.id === selectEventDatas.room_id.id);
+
+    const bookingHours = selectEventDatas.booking_hour;
+    const availableHours = bookingHours.concat(selectRoomDatas.availability);
+
+    // Use mutation delete Event
     deleteEvent({ variables: { id: props.id } } )
+    updateRoom({ variables: { id: selectEventDatas.room_id.id, availability: availableHours} })
   };
 
     return (
