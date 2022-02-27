@@ -4,6 +4,7 @@ import { gql, useQuery } from '@apollo/client';
 import EventCard from './EventCard';
 
 import { useEventDispatch, useEventState } from '../context/events';
+import { useRoomDispatch } from '../context/rooms';
 
 const GET_EVENTS = gql`
   query getEvents {
@@ -12,18 +13,37 @@ const GET_EVENTS = gql`
         title
         description
         date
+        booking_hour
         begin_hour
         end_hour
         createdAt
+        room_id {
+          id
+        }
     }
   }
-`
+`;
+
+const GET_ROOMS = gql`
+  query getRooms{
+    getRooms{
+        id
+        name
+        availability
+      }
+    }
+`;
 
 export default function EventList() {
+
   const dispatchEvent = useEventDispatch();
   const { events } = useEventState();
+  const dispatchRoom = useRoomDispatch();
 
-  const { loading: eventsLoading, data: eventsData } = useQuery(GET_EVENTS)
+  const { loading: eventsLoading, data: eventsData } = useQuery(GET_EVENTS);
+  const { data: roomsData } = useQuery(GET_ROOMS, {
+    onError: (err) => console.log(err),
+  });
 
   useEffect(() => {
     if (eventsData) {
@@ -33,6 +53,16 @@ export default function EventList() {
       })
     }
   }, [eventsData])
+
+
+  useEffect(() => {
+    if (roomsData) {
+      dispatchRoom({
+        type: 'GET_ROOMS',
+        payload: roomsData.getRooms
+      })
+    }
+  }, [roomsData])
 
 
   let eventsMarkup;
