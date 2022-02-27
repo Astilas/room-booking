@@ -54,8 +54,16 @@ const pubsub = new PubSub();
     subscribe,
     async onConnect(connectionParams, webSocket, context) {
       console.log('Connected');
+      let user;
+      if (connectionParams.Authorization) {
+        let token = connectionParams.Authorization.split('Bearer ')[1]
+        
+        await jwt.verify(token, JWT_SECRET, (err, decodedToken) => {
+          user = decodedToken;
+        });
+      }
       // context for subscription
-      return { pubsub };
+      return { pubsub, user };
     },
     async onDisconnect(websocket){
       console.log('Disconnected');
