@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useContext } from 'react'
+import React, { createContext, useReducer, useContext } from 'react';
 
 const EventStateContext = createContext()
 const EventDispatchContext = createContext()
@@ -13,13 +13,13 @@ const eventReducer = (state, action) => {
           events: action.payload,
         }
     case 'ADD_EVENT':
-      eventsCopy = [...state.events]
+      eventsCopy = [...state.events];
         return {
           ...state,
           events: [...eventsCopy, event]
         }
     case 'DELETE_EVENT':
-      eventsCopy = [...state.events]
+      eventsCopy = [...state.events];
       // Remove event by filter id on the event list
       const newEventList = eventsCopy
             .filter((e) => e.id !== event.id);
