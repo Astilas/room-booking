@@ -36,3 +36,10 @@
     transform: rotate(360deg);
   }
 }
+
+.modal {
+	display: block !important;
+	background-color: rgba(17, 16, 16, 0.726);
+	outline: none !important;
+	overflow-y: scroll;
+}
