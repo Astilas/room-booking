@@ -1,61 +1,74 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Form, Button } from 'react-bootstrap';
-import { gql, useQuery } from '@apollo/client';
+import React from 'react';
+import { Form } from 'react-bootstrap';
 
-import { useRoomDispatch, useRoomState } from '../context/rooms';
-
-const GET_ROOMS = gql`
-  query getRooms{
-    getRooms{
-        id
-        name
-        availability
-      }
-    }
-`;
+import { useRoomState } from '../context/rooms';
+import Select from 'react-select';
 
 export default function SelectRoom(props) {
 
-    const dispatchRoom = useRoomDispatch();
     const { rooms } = useRoomState();
-  
-    const [ errors, setErrors ] = useState({});
-    
-    const { loading_rooms } = useQuery(GET_ROOMS, {
-      onCompleted: (data) =>
-          dispatchRoom({ type: 'GET_ROOMS', payload: data.getRooms }),
-      onError: (err) => console.log(err),
-    });
 
     let roomsMarkup;
-    if (!rooms || loading_rooms) {
+    let roomData;
+    const filterRoomsEmpty = rooms.filter((room) => {
+        return room.availability.length > 0
+    })
+    if (!filterRoomsEmpty) {
         roomsMarkup = "Loading rooms..."
-    } else if (rooms.length === 0) {
+    } else if (filterRoomsEmpty.length === 0) {
         roomsMarkup = "No rooms available"
-    } else if (rooms.length > 0) {
-        roomsMarkup = 
+    } else if (filterRoomsEmpty.length > 0) {
+
+        roomsMarkup =
         <Form.Control
             as="select"
-            className={props.errors.room_id && 'is-invalid'}
+            // className={props.errors.room_id && 'is-invalid'}
             onChange={(e) =>
-                props.handleRoomChange(e.target.value)
+                props.handleAvailabilityChange(e.target.value)
             }
-            
+            required
         >       
             <option value="">Select a room...</option>
-            {rooms.map((room) => (
+            {filterRoomsEmpty.map((room) => (
                 <option key={room.id} value={room.id}>{room.name}</option>
             ))}
         </Form.Control>
     }
+    
+    if (props.room === {}){
+        roomData = "You need to select a room"
+
+    } else if (props.room !== {}){
+        let array = props.room.availability || [];
+        const options = array.map((item) => {
+            return {value: item, label: item}
+        })
+        roomData =
+            < Select  
+                isMulti
+                onChange={(option) =>
+                    props.handleChange(option)
+                }
+                name="booking_hour"
+                options={options}
+                className="basic-multi-select"
+                classNamePrefix="select"
+            />
+    }
 
     return (
         <Form.Group>
-            <Form.Label className={errors.room_id && 'text-danger'}>
-                {errors.room_id ?? 'Which room ?'}
+            <Form.Label className={props.errors.room_id && 'text-danger'}>
+                {props.errors.room_id ?? 'Which room ?'}
             </Form.Label>
             {roomsMarkup}
-        </Form.Group>       
+            <Form.Group>
+                <Form.Label className={props.errors.booking_hour && 'text-danger'}>
+                    {props.errors.date ?? 'Select hours'}
+                </Form.Label>
+                {roomData}
+            </Form.Group>
+        </Form.Group>
     )
   }
             
