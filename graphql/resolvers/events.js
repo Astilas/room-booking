@@ -2,7 +2,6 @@ const { UserInputError, AuthenticationError } = require('apollo-server-express')
 const { withFilter } = require('graphql-subscriptions');
 const { Event } = require('../../models');
 
-const { PubSub } = require('graphql-subscriptions');
 
 module.exports = {
     Query: {
@@ -34,7 +33,7 @@ module.exports = {
     },
     Mutation: {
         createEvent: async (_, args, { user, pubsub }) => {
-          let { title, description, date, begin_hour, end_hour, room_id } = args;
+          let { title, description, date, booking_hour, begin_hour, end_hour, room_id, user_id } = args;
           let errors = {};
 
           try {
@@ -63,10 +62,11 @@ module.exports = {
               title,
               description,
               date,
+              booking_hour,
               begin_hour,
               end_hour,
               room_id,
-              user_id: 1,
+              user_id,
             })
     
             // Publish event
@@ -85,7 +85,7 @@ module.exports = {
           }
         },
         updateEvent: async (_, args, { user }) => {
-            let { id, title, description, date, begin_hour, end_hour, room_id } = args;
+            let { id, title, description, date, booking_hour, begin_hour, end_hour, room_id } = args;
             let errors = {};
       
             try {
@@ -119,6 +119,7 @@ module.exports = {
                 title,
                 description,
                 date,
+                booking_hour,
                 begin_hour,
                 end_hour,
                 room_id,
@@ -139,7 +140,7 @@ module.exports = {
           },
           deleteEvent: async (_, args, { user, pubsub }) => {
             const { id } = args;
-      
+
             try {
               if (!user) throw new AuthenticationError('Unauthenticated');
 
@@ -147,7 +148,7 @@ module.exports = {
               // Delete event ==> BOOL
               const eventRemoved = await Event.destroy({ where: { id: id }});
 
-              pubsub.publish('REMOVE_EVENT', { removeEvent: {
+              await pubsub.publish('REMOVE_EVENT', { removeEvent: {
                 mutation: "Deleted",
                 event: event
               } });
@@ -166,18 +167,32 @@ module.exports = {
     },
     Subscription: {
       newEvent: {
-        subscribe:
-        (_, __, { pubsub, user }) => {
-          return pubsub.asyncIterator(['NEW_EVENT'])
-        },
-        
+        subscribe: withFilter(
+          (_, __, { pubsub, user }) => {
+              if (!user) throw new AuthenticationError('Unauthenticated')
+              return pubsub.asyncIterator(['NEW_EVENT'])
+          },
+          ( { newEvent }, variables ) => {
+              // Only push an update if the comment is on
+              // the correct repository for this operation
+              if (newEvent) return true
+              return false
+            },
+        )
       },
       removeEvent: {
-        subscribe: 
-         (_, __, { pubsub, user }) => {
+        subscribe:  withFilter(
+          (_, __, { pubsub, user }) => {
             if (!user) throw new AuthenticationError('Unauthenticated')
-            return pubsub.asyncIterator(['REMOVE_EVENT'])
-          }
-    },
-  }
+              return pubsub.asyncIterator(['REMOVE_EVENT'])
+        },
+        ( { removeEvent }, variables ) => {
+          // Only push an update if the comment is on
+          // the correct repository for this operation
+          if (removeEvent) return true
+          return false
+        },
+      )
+      },
+    }
 }
