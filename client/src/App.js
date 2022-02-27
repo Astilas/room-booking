@@ -8,7 +8,6 @@ import Home from './components/Home';
 import Register from './components/Register';
 import Login from './components/Login';
 
-import CreateEvent from './components/CreateEvent';
 import UpdateEvent from './components/UpdateEvent';
 
 import { AuthProvider } from './context/auth';
@@ -26,14 +25,8 @@ function App(props) {
             <BrowserRouter>
               <Container className="pt-5">
                 <Routes>
-                  <Route exact patho='/' element={<ProtectedRoute/>} >
+                  <Route exact path='/' element={<ProtectedRoute/>} >
                     <Route exact path='/' element={<Home />} />
-                  </Route>
-                  <Route exact path='/' element={<ProtectedRoute/>} >
-                    <Route exact path='/create-event' element={<CreateEvent />} />
-                  </Route>
-                  <Route exact path='/' element={<ProtectedRoute/>} >
-                    <Route exact path='/update-event/:id' element={<UpdateEvent />} />
                   </Route>
                   <Route exact path='/' element={<GuestRoute/>} >
                     <Route path="/register" element={<Register />} />
