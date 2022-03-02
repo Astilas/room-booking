@@ -5,11 +5,12 @@ const { Event } = require('../../models');
 
 module.exports = {
     Query: {
-        getEvents: async (_, __, { user }) => {
+        getEvents: async (_, args, { user }) => {
+          const { user_id } = args;
             try {
-                // if (!user) throw new AuthenticationError('Unauthenticated');
+                if (!user) throw new AuthenticationError('Unauthenticated');
 
-                const events = await Event.findAll();
+                const events = await Event.findAll({ where: { user_id: user_id}});
 
                 return events;
             } catch (err) {
@@ -20,7 +21,7 @@ module.exports = {
         getEventById: async (_, args, { user }) => {
           const { id } = args;
           try {
-              // if (!user) throw new AuthenticationError('Unauthenticated');
+              if (!user) throw new AuthenticationError('Unauthenticated');
 
               const event = await Event.findOne({ where: { id: id } });
   
@@ -169,7 +170,7 @@ module.exports = {
       newEvent: {
         subscribe: withFilter(
           (_, __, { pubsub, user }) => {
-              if (!user) throw new AuthenticationError('Unauthenticated')
+              if (!user) throw new AuthenticationError('Unauthenticated');
               return pubsub.asyncIterator(['NEW_EVENT'])
           },
           ( { newEvent }, variables ) => {
