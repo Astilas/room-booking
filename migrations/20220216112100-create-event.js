@@ -17,6 +17,10 @@ module.exports = {
       date: {
         type: Sequelize.STRING
       },
+      booking_hour: {
+        type: Sequelize.ARRAY(Sequelize.TEXT),
+        allowNull: false,
+      },
       begin_hour: {
         type: Sequelize.STRING
       },
@@ -27,7 +31,8 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       room_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,

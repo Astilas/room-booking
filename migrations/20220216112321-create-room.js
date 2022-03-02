@@ -12,7 +12,11 @@ module.exports = {
         type: Sequelize.STRING
       },
       availability: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.ARRAY(Sequelize.TEXT)
+      },
+      company: {
+        type: Sequelize.STRING(5),
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
