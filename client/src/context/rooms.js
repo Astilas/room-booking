@@ -21,11 +21,13 @@ const roomReducer = (state, action) => {
       const newRooms = roomsCopy.filter((room) => {
         return room !== selectRoomDatas;
       });
-
+      // Sort rooms
+      const roomsUpdate = [...newRooms, room]
+      const sortRoom = roomsUpdate.sort((a,b) =>  a.id - b.id);
       // Then add the upadted room (with the new available hour) in rooms state
       return {
         ...state,
-        rooms: [...newRooms, room],
+        rooms: sortRoom,
       };
     default:
       throw new Error(`Unknown action type: ${action.type}`);
