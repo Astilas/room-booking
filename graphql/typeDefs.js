@@ -5,6 +5,7 @@ module.exports = gql`
     id: ID!
     username: String!
     email: String
+    company: String!
     createdAt: String!
     token: String
   }
@@ -12,6 +13,7 @@ module.exports = gql`
     id: ID!
     name: String!
     availability: [String]!
+    company: String!
   }
   type Event {
     id: ID!
@@ -27,8 +29,8 @@ module.exports = gql`
   }
   type Query {
     getUsers: [User]!
-    getRooms: [Room]!
-    getEvents: [Event]!
+    getRooms(company: String!): [Room]!
+    getEvents(user_id: ID!): [Event]!
     getEventById(id: ID!): Event!
   }
   type Mutation {
@@ -36,6 +38,7 @@ module.exports = gql`
     register(
       username: String!
       email: String!
+      company: String!
       password: String!
       confirmPassword: String!
     ): User!

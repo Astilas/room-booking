@@ -5,11 +5,14 @@ const { withFilter } = require('graphql-subscriptions');
 
 module.exports = {
     Query: {
-        getRooms: async (_, __, { user }) => {
+        getRooms: async (_, args, { user }) => {
+            const { company } = args;
             try {
                 if (!user) throw new AuthenticationError('Unauthenticated');
 
                 const rooms = await Room.findAll({
+                    where: { company: company },
+                    order: ['id']
                     // where: Sequelize.where(
                     //     Sequelize.fn('array_length', Sequelize.col('availability'), 1),
                     //     { [Op.gt]: 0 },

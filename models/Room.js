@@ -15,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Room.init({
     name: DataTypes.STRING,
-    availability: DataTypes.BOOLEAN
+    availability: DataTypes.ARRAY(DataTypes.STRING),
+    company: DataTypes.STRING
   }, {
     sequelize,
     // disable the modification of table names; By default, sequelize will automatically

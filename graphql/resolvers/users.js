@@ -51,8 +51,8 @@ module.exports = {
             errors.password = 'password is incorrect'
             throw new UserInputError('password is incorrect', { errors })
           }
-          const { id, email } = user;
-          const token = jwt.sign({ id, email, username }, JWT_SECRET, {
+          const { id, email, company } = user;
+          const token = jwt.sign({ id, email, username, company }, JWT_SECRET, {
             expiresIn: 60 * 60,
           })
     
@@ -67,7 +67,7 @@ module.exports = {
         }
     },
     register: async (_, args) => {
-      let { username, email, password, confirmPassword } = args
+      let { username, email, password, confirmPassword, company } = args
       let errors = {}
 
       try {
@@ -83,6 +83,9 @@ module.exports = {
         if (password !== confirmPassword)
           errors.confirmPassword = 'passwords must match'
 
+        if (company === null)
+          errors.company = 'company must be selected'
+
         if (Object.keys(errors).length > 0) {
           throw errors
         }
@@ -94,6 +97,7 @@ module.exports = {
         const user = await User.create({
           username,
           email,
+          company,
           password,
         })
 
