@@ -30,7 +30,7 @@ export default function Login() {
     onError: (error) => setErrors(error && error.graphQLErrors[0] ? error.graphQLErrors[0].extensions.errors : {}),
     onCompleted(data) {
       dispatch({ type: 'LOGIN', payload: data.login })
-      navigate('/')
+      window.location.href = '/';
     },
   })
 
