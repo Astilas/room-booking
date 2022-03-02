@@ -43,3 +43,18 @@
 	outline: none !important;
 	overflow-y: scroll;
 }
+
+.hour-border {
+  font-weight: bold;
+  color: black;
+  border: 2px solid black;
+  margin: 3px;
+}
+
+.margin-room {
+  margin: 5px;
+}
+
+.center-div {
+  justify-content: center;
+}
