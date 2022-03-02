@@ -8,8 +8,6 @@ import Home from './components/Home';
 import Register from './components/Register';
 import Login from './components/Login';
 
-import UpdateEvent from './components/UpdateEvent';
-
 import { AuthProvider } from './context/auth';
 import { EventProvider } from './context/events';
 import { RoomProvider } from './context/rooms';
