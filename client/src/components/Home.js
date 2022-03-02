@@ -65,11 +65,13 @@ export default function Home() {
     setModalShow(false);
   };
 
-  const { data: eventData, error: eventError } = useSubscription(NEW_EVENT);
+  const { data: eventData, error: eventError } = useSubscription(NEW_EVENT)
 
-  const { data: removeData, error: removeError } = useSubscription(REMOVE_EVENT);
+  const { data: removeData, error: removeError } = useSubscription(
+    REMOVE_EVENT
+  )
 
-  const { data: roomData, error: roomError } = useSubscription(CHANGE_ROOM_AVAILABILITY);
+  const { data: roomData, error: roomError } = useSubscription(CHANGE_ROOM_AVAILABILITY)
 
   useEffect(() => {
     if (eventError) console.log(eventError);
@@ -114,7 +116,7 @@ export default function Home() {
         },
       })
     }
-  }, [roomError, roomData]);
+  });
 
   const logout = () => {
     dispatch({ type: 'LOGOUT' })
@@ -123,14 +125,8 @@ export default function Home() {
 
   return (
     <Fragment>
-        <Row className="bg-white justify-content-around mb-1">
-          <Button variant="link" onClick={()=>navigate('/login')}>Login</Button>
-          <Button variant="link" onClick={()=>navigate('/register')}>Register</Button>
-          <Button variant="link" onClick={() => setModalShow(!modalShow)}>Create an event</Button>
-          <Button variant="link" onClick={logout}>
-            Logout
-          </Button>
-        </Row>
+        <Button variant="link" onClick={logout}>Logout</Button>
+        <Button variant="link" onClick={() => setModalShow(!modalShow)}>Create an event</Button>
         <EventList />
         {modalShow && <CreateEvent closeModal={closeModal} />}
   </Fragment>
