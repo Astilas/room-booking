@@ -87,13 +87,10 @@ export default function CreateEvent({ closeModal }) {
     let navigate = useNavigate();
 
     const [updateRoom, { loading_rooms }] = useMutation(UPDATE_ROOM, {
-        // onCompleted: (data) =>
-        //     roomDispatch({ type: 'UPDATE_ROOM', payload: data.updateRoom }),
         // onError: (error) => setErrors(error && error.graphQLErrors[0] ? error.graphQLErrors[0].extensions.errors : {}),
     });
 
     const [createEvent, { loading }] = useMutation(CREATE_EVENT, {
-        // update: (_, __) => navigate('/'),
         onError: (error) => setErrors(error && error.graphQLErrors[0] ? error.graphQLErrors[0].extensions.errors : {}),
     });
 
@@ -106,8 +103,9 @@ export default function CreateEvent({ closeModal }) {
 
     const { booking_hour } = variables;
     const { room } = roomValues;
+
     const handleChange = (optionValue) => {
-        //Delete item
+        //Delete item select
         let difference = booking_hour.filter(x => !optionValue.includes(x));
 
         const selectHour = optionValue.map((item) => {
@@ -123,12 +121,11 @@ export default function CreateEvent({ closeModal }) {
         setVariables({ ...variables, booking_hour: selectHour, availability: filter_array })
     }
 
-    const submitEventForm = (e) => {
+    const submitEventForm = async (e) => {
         e.preventDefault();
-
-        createEvent({ variables });
-
-        updateRoom({ variables })
+       
+        await updateRoom({ variables });
+        await createEvent({ variables });
         closeModal();
     }
 
