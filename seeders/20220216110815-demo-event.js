@@ -15,6 +15,7 @@ module.exports = {
       date: date,
       begin_hour: myDate,
       end_hour: newDate,
+      booking_hour: ['06-07', '07-08','08-09'],
       user_id: 1,
       room_id: 1,
       createdAt: new Date(),
