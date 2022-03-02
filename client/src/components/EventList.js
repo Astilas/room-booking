@@ -1,14 +1,16 @@
 import React, { useEffect } from 'react';
-import { Row, Col } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import { gql, useQuery } from '@apollo/client';
 import EventCard from './EventCard';
+import RoomCard from './RoomCard';
 
 import { useEventDispatch, useEventState } from '../context/events';
-import { useRoomDispatch } from '../context/rooms';
+import { useRoomDispatch, useRoomState } from '../context/rooms';
+import { useAuthState } from '../context/auth';
 
 const GET_EVENTS = gql`
-  query getEvents {
-    getEvents {
+  query getEvents ($user_id: ID!) {
+    getEvents (user_id: $user_id){
         id
         title
         description
@@ -25,11 +27,16 @@ const GET_EVENTS = gql`
 `;
 
 const GET_ROOMS = gql`
-  query getRooms{
-    getRooms{
+  query getRooms(
+    $company: String!
+    ){
+    getRooms (
+      company: $company
+    ){
         id
         name
         availability
+        company
       }
     }
 `;
@@ -37,11 +44,19 @@ const GET_ROOMS = gql`
 export default function EventList() {
 
   const dispatchEvent = useEventDispatch();
-  const { events } = useEventState();
   const dispatchRoom = useRoomDispatch();
+  const { events } = useEventState();
+  const { rooms } = useRoomState();
+  const { user } = useAuthState();
+  const { id, company } = user;
 
-  const { loading: eventsLoading, data: eventsData } = useQuery(GET_EVENTS);
-  const { data: roomsData } = useQuery(GET_ROOMS, {
+  const { loading: eventsLoading, data: eventsData } = useQuery(GET_EVENTS,
+    {
+      variables: { user_id: id }
+    });
+
+  const { data: roomsData, loading: roomsLoading } = useQuery(GET_ROOMS, {
+    variables: { company: company },
     onError: (err) => console.log(err),
   });
 
@@ -66,28 +81,60 @@ export default function EventList() {
 
 
   let eventsMarkup;
-  if (!events|| eventsLoading) {
+  if (!events || eventsLoading) {
     eventsMarkup = <p>Loading..</p>
   } else if (events.length === 0) {
-    eventsMarkup = <p>No events yet</p>
+    eventsMarkup = <p>No boooking yet</p>
   } else if (events.length > 0) {
     eventsMarkup = events.map((event) => (
-        <Col lg={5} md={12} sm={12} xs={9} className="margin-event" key={event.id}>
-            <EventCard
-                key={event.id}
-                id={event.id}
-                title={event.title}
-                description={event.description}
-                date={event.date}
-                begin_hour={event.begin_hour}
-                end_hour={event.end_hour}
-            />
-        </Col>
+      <Col lg={5} md={12} sm={12} xs={9} className="margin-event" key={event.id}>
+        <EventCard
+          key={event.id}
+          id={event.id}
+          title={event.title}
+          description={event.description}
+          date={event.date}
+          begin_hour={event.begin_hour}
+          end_hour={event.end_hour}
+        />
+      </Col>
     ))
   }
+
+  let roomsMarkup;
+  console.log(rooms)
+  if (!rooms || roomsLoading) {
+    roomsMarkup = <p>Loading..</p>
+  } else if (rooms.length === 0) {
+    roomsMarkup = <p>No rooms available</p>
+  } else if (rooms.length > 0) {
+    roomsMarkup = rooms.map((room) => (
+      room.availability.length > 0 ?
+        <Col lg={3} md={6} sm={6} xs={12} className="margin-room" key={room.id}>
+          <RoomCard
+            key={room.id}
+            id={room.id}
+            name={room.name}
+            availability={room.availability}
+            company={room.company}
+          />
+        </Col>
+        : ''
+    ))
+  }
+
   return (
-      <Row className="bg-white">
+
+    <Container>
+      <h3>Rooms availability</h3>
+      <Row className="center-div">
+        {roomsMarkup}
+      </Row>
+      <h3>Your booking</h3>
+      <Row className="gb-white">
         {eventsMarkup}
       </Row>
+
+    </Container>
   )
 }
