@@ -51,10 +51,48 @@
   margin: 3px;
 }
 
-.margin-room {
+.margin-card {
   margin: 5px;
+  height: auto;
+  width: auto;
 }
 
 .center-div {
   justify-content: center;
+}
+
+.create-button {
+  margin: 1rem 2rem 2rem 2rem;
+  padding: 2rem;
+  background-color: #f7f7f9;
+  border-radius: 0.6rem;
+  text-align: center;
+}
+
+.align-end {
+  text-align: end;
+}
+
+.align-center {
+  text-align: center
+}
+
+.center-content {
+  justify-content: center
+}
+
+.title-rooms {
+  margin: 1rem 2rem 2rem 2rem;
+  padding: 2rem;
+  background-color: #0dcaf0;
+  border-radius: 0.6rem;
+  text-align: center;
+}
+
+.title-events {
+  margin: 1rem 2rem 2rem 2rem;
+  padding: 2rem;
+  background-color: #ffc107;
+  border-radius: 0.6rem;
+  text-align: center;
 }

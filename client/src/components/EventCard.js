@@ -31,7 +31,7 @@ export default function EventCard(props) {
 
   const [errors, setErrors] = useState({})
 
-  const [deleteEvent, { loading }] = useMutation(DELETE_EVENT, {
+  const [deleteEvent] = useMutation(DELETE_EVENT, {
     onError: (error) => setErrors(error && error.graphQLErrors[0] ? error.graphQLErrors[0].extensions.errors : {}),
   });
 
@@ -58,14 +58,24 @@ export default function EventCard(props) {
     await deleteEvent({ variables: { id: props.id } });
   };
 
+  const arrayH = [];
+  props.booking_hour.map((b_h) => arrayH.push(b_h));
+
+  const splitArray = arrayH.map((item) => {
+    return item.split('-');
+  });
+  const merged = [].concat.apply([], splitArray);
+  const begin = merged[0];
+  const end = merged[merged.length-1];
+
   return (
-    <Row className="div-event">
-      <Card bg="info" text="white" style={{ width: '30rem', height: '30rem' }}>
+    <Row className="center-div">
+      <Card bg="warning" text="white" style={{ width: '30rem', height: '20rem' }}>
         <Card.Header>
           <h2>{props.title}</h2>
         </Card.Header>
         <Card.Body className="card-body-css">
-          <Card.Title>Le {props.date} à {props.begin_hour}</Card.Title>
+          <Card.Title>Le {props.date} de {begin}h à {end}h</Card.Title>
           <Card.Text className="">
             {props.description}
           </Card.Text>
@@ -73,8 +83,9 @@ export default function EventCard(props) {
             {props.end_hour}
           </Card.Text>
         </Card.Body>
-        <Card.Footer>
+        <Card.Footer className="align-end">
           <Button
+            variant="danger"
             className="icon-size"
             onClick={handleDelete}
           >

@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Row, Button } from 'react-bootstrap';
+import { Row, Button, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import EventList from './EventList';
 import CreateEvent from './CreateEvent';
@@ -125,10 +125,20 @@ export default function Home() {
 
   return (
     <Fragment>
-        <Button variant="link" onClick={logout}>Logout</Button>
-        <Button variant="link" onClick={() => setModalShow(!modalShow)}>Create an event</Button>
+
+        <Row className="align-end">
+        <Col>
+        <Button variant="danger" onClick={logout}>Logout</Button>
+        </Col>
+        </Row>
+        <Row className="create-button">
+          <h4>Book meeting room</h4>
+        <Col>
+        <Button variant="warning" onClick={() => setModalShow(!modalShow)}>Create an event</Button>
+        </Col>
+        </Row>
         <EventList />
         {modalShow && <CreateEvent closeModal={closeModal} />}
-  </Fragment>
+    </Fragment>
   )
 }

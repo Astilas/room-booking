@@ -87,13 +87,14 @@ export default function EventList() {
     eventsMarkup = <p>No boooking yet</p>
   } else if (events.length > 0) {
     eventsMarkup = events.map((event) => (
-      <Col lg={5} md={12} sm={12} xs={9} className="margin-event" key={event.id}>
+      <Col lg={5} md={12} sm={12} xs={9} className="margin-card" key={event.id}>
         <EventCard
           key={event.id}
           id={event.id}
           title={event.title}
           description={event.description}
           date={event.date}
+          booking_hour={event.booking_hour}
           begin_hour={event.begin_hour}
           end_hour={event.end_hour}
         />
@@ -110,7 +111,7 @@ export default function EventList() {
   } else if (rooms.length > 0) {
     roomsMarkup = rooms.map((room) => (
       room.availability.length > 0 ?
-        <Col lg={3} md={6} sm={6} xs={12} className="margin-room" key={room.id}>
+        <Col lg={3} md={6} sm={6} xs={12} className="margin-card" key={room.id}>
           <RoomCard
             key={room.id}
             id={room.id}
@@ -126,12 +127,12 @@ export default function EventList() {
   return (
 
     <Container>
-      <h3>Rooms availability</h3>
+      <h3 className="align-center title-rooms">Meeting rooms availability</h3>
       <Row className="center-div">
         {roomsMarkup}
       </Row>
-      <h3>Your booking</h3>
-      <Row className="gb-white">
+      <h3 className="align-center title-events">Your bookings</h3>
+      <Row className="gb-white center-div">
         {eventsMarkup}
       </Row>
 
