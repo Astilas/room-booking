@@ -7,6 +7,7 @@ import ApolloProvider from './ApolloProvider';
 import Home from './components/Home';
 import Register from './components/Register';
 import Login from './components/Login';
+import ErrorPage from './components/ErrorPage'
 
 import { AuthProvider } from './context/auth';
 import { EventProvider } from './context/events';
@@ -30,6 +31,7 @@ function App(props) {
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />
                   </Route>
+                  <Route path='*' element={<ErrorPage />} />
                 </Routes>
               </Container>
             </BrowserRouter>
