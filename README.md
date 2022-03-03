@@ -9,21 +9,23 @@
     `touch env.json`
 
 config.json example:
-;;;
-    {
+```JSON
+{
     "development": {
       "username": "login_to_db",
       "password": "password_to_db",
       "database": "database_name",
       "host": "localhost",
       "dialect": "postgres"
-    },
-;;;
+},
+```
 
 env.json example:
-;;;{
+``` JSON
+{
     "JWT_SECRET": "Your_jwt_secret"
-;;;}
+}
+```
 
 4) `npx sequelize db:migrate`
 
