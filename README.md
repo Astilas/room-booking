@@ -8,8 +8,9 @@
     `touch config.json`
     `touch env.json`
 
-config.json example
+config.json example:
 ```json{
+    {
     "development": {
       "username": "login_to_db",
       "password": "password_to_db",
