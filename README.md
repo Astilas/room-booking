@@ -1,6 +1,6 @@
 # Run the project
 
-1) git clone this project: git clone `git clone https://github.com/Astilas/room-booking.git`
+1) Git clone this project: git clone `git clone https://github.com/Astilas/room-booking.git`
 
 2) Then `npm install` on the root folder and on client folder.
 
@@ -27,9 +27,9 @@ env.json example:
 }
 ```
 
-4) `npx sequelize db:migrate`
+4) Migrate models with sequelize to create tables in your databse: `npx sequelize db:migrate`
 
-5) `npx sequelize db:seed:all`
+5) Create demo datas for users/events/rooms to your database: `npx sequelize db:seed:all`
 
 6) run server `npm run dev` in root folder
 
