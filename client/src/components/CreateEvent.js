@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 import { gql, useMutation } from '@apollo/client';
-import { useNavigate } from 'react-router-dom';
 import SelectRoom from './SelectRoom';
 import checkTodayDate from '../functions/checkTodayDate';
 import { useAuthState } from '../context/auth';
-import { useRoomState, useRoomDispatch } from '../context/rooms';
+import { useRoomState } from '../context/rooms';
 
 const CREATE_EVENT = gql`
   mutation createEvent(
@@ -82,9 +81,7 @@ export default function CreateEvent({ closeModal }) {
         room: {},
     });
 
-    const roomDispatch = useRoomDispatch();
     const [errors, setErrors] = useState({});
-    let navigate = useNavigate();
 
     const [updateRoom, { loading_rooms }] = useMutation(UPDATE_ROOM, {
         // onError: (error) => setErrors(error && error.graphQLErrors[0] ? error.graphQLErrors[0].extensions.errors : {}),
@@ -157,6 +154,7 @@ export default function CreateEvent({ closeModal }) {
                                                 setVariables({ ...variables, title: e.target.value })
                                             }
                                             required
+                                            maxLength="30"
                                         />
                                     </Form.Group>
                                     <Form.Group>
@@ -171,6 +169,7 @@ export default function CreateEvent({ closeModal }) {
                                                 setVariables({ ...variables, description: e.target.value })
                                             }
                                             required
+                                            maxLength="150"
                                         />
                                     </Form.Group>
                                     <Form.Group>
@@ -185,6 +184,7 @@ export default function CreateEvent({ closeModal }) {
                                                 setVariables({ ...variables, date: e.target.value })
                                             }
                                             min={todayDate}
+                                            max="2025-12-31"
                                             required
                                         />
                                     </Form.Group>
