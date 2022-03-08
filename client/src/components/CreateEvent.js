@@ -131,7 +131,7 @@ export default function CreateEvent({ closeModal }) {
             <div className="modal-dialog" role="document">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title">Add Event</h5>
+                        <h3 className="modal-title">Create Event</h3>
                         <button type="button" className="close" onClick={closeModal}>
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -139,8 +139,6 @@ export default function CreateEvent({ closeModal }) {
                     <div className="modal-body">
                         <Container>
                             <Row className="bg-white py-5 justify-content-center">
-
-                                <h1 className="center">Create an event</h1>
                                 <Form onSubmit={submitEventForm}>
                                     <Form.Group>
                                         <Form.Label className={errors.title && 'text-danger'}>

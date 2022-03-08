@@ -74,6 +74,10 @@
   text-align: end;
 }
 
+.text-center {
+  margin-top: 10px
+}
+
 .align-center {
   text-align: center
 }

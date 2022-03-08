@@ -84,7 +84,7 @@ export default function EventList() {
   if (!events || eventsLoading) {
     eventsMarkup = <p>Loading..</p>
   } else if (events.length === 0) {
-    eventsMarkup = <p>No boooking yet</p>
+    eventsMarkup = <p>No booking yet</p>
   } else if (events.length > 0) {
     eventsMarkup = events.map((event) => (
       <Col lg={5} md={12} sm={12} xs={9} className="margin-card" key={event.id}>
