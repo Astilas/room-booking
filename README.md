@@ -34,3 +34,7 @@ env.json example:
 6) run server `npm run dev` in root folder
 
 7) Run client `npm start` in client folder
+
+# Architecture
+
+![alt text](./architecture/architecture.png?raw=true "Architecture")
