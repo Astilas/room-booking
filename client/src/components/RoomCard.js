@@ -14,7 +14,7 @@ export default function RoomCard({ name, availability }) {
               <Row className="center-content">
                 {availability.map((item) => {
                     return (
-                      <Col lg={3} md={3} sm={2} xs={4} className="hour-border">
+                      <Col lg={3} md={3} sm={2} xs={4} className="hour-border" key={item}>
                         {item}
                       </Col>
                     )

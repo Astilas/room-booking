@@ -75,7 +75,8 @@ export default function EventCard(props) {
           <h2>{props.title}</h2>
         </Card.Header>
         <Card.Body className="card-body-css">
-          <Card.Title>Le {props.date} de {begin}h à {end}h</Card.Title>
+          <Card.Title>{props.date}</Card.Title>
+          <Card.Title>{begin}h - {end}h</Card.Title>
           <Card.Text className="">
             {props.description}
           </Card.Text>
