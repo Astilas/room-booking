@@ -44,8 +44,7 @@ module.exports = {
                 pubsub.publish('CHANGE_ROOM_AVAILABILITY', { changeRoomAvailability: updatedRoom });
 
                   // Return room
-                return room;
-
+                return updatedRoom;
 
             } catch (err) {
                 console.log(err);
