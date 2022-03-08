@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "npx nodemon server",
     "start": "node server.js",
-    "test": "jest"
+    "test": "npm run test:user && npm run test:event",
+    "test:user": "jest user.test --detectOpenHandles",
+    "test:event": "jest event.test --detectOpenHandles"
   },
   "author": "",
   "license": "ISC",
@@ -37,6 +39,7 @@
     "@babel/register": "^7.17.0",
     "apollo-boost": "^0.4.9",
     "cross-fetch": "^3.1.5",
+    "easygraphql-tester": "^6.0.1",
     "graphql": "^15.8.0"
   }
 }
