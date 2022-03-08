@@ -103,7 +103,6 @@ export default function EventList() {
   }
 
   let roomsMarkup;
-  console.log(rooms)
   if (!rooms || roomsLoading) {
     roomsMarkup = <p>Loading..</p>
   } else if (rooms.length === 0) {
